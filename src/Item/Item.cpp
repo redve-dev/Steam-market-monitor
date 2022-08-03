@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <algorithm>
 #include "Item.hpp"
 #include "../functions.hpp"
@@ -7,22 +8,42 @@
 #include <thread>
 #include "../rapidjson/document.h"
 #include <string>
+#include <map>
 
-Item::Item( const std::string& item_name, int curr=3):
+Item::Item( const std::string& item_name, int currency):
 	name(item_name),
-	request(GetItemRequest(item_name, curr))
+	request(GetItemRequest(item_name, currency)),
+	curr(currency)
 {
 }
 
 Item::Item( const std::string& item_name):
 	name(item_name),
-	request(GetItemRequest(item_name, 3))
+	request(GetItemRequest(item_name, 3)),
+	curr(3)
 {
 }
 
 static size_t WriteFunc(void* contents, size_t size, size_t nmemb, void* userp){
 	((std::string*)userp)->append((char*)contents, size * nmemb);
 	return size * nmemb;
+}
+
+void PrintItemData(const Item& item, int curr){
+	std::map<int, std::string> curr_map{
+		{1, "USD"},
+		{2, "GBP"},
+		{3, "EUR"},
+		{6, "PLN"},
+	};
+	//std::cout<<curr<<std::endl;
+	//std::cout<<curr_map.at( curr )<<std::endl;
+	std::cout
+		<<std::right<<std::setw(50)<<item.name<<": "
+		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<item.GetPrice()
+		<<std::left<<std::setw(4)<<' '<<curr_map[curr]
+		<<std::endl;
+
 }
 
 std::string PerformRequest(const std::string& request){
@@ -58,7 +79,7 @@ void Item::Update( int delay ){
 		std::cout<<"api request: "<<request<<std::endl;
 	}
 
-	std::cout<<name<<' '<<GetPrice()<<std::endl;
+	PrintItemData(*this, curr);
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 }
 

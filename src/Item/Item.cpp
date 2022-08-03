@@ -2,16 +2,21 @@
 #include "../functions.hpp"
 #include <chrono>
 #include <curl/curl.h>
-#include <curl/easy.h>
 #include <iostream>
 #include <thread>
 #include "../rapidjson/document.h"
+#include <string>
+
+Item::Item( const std::string& item_name, int curr=3):
+	name(item_name),
+	request(GetItemRequest(item_name, curr))
+{
+}
 
 Item::Item( const std::string& item_name):
 	name(item_name),
-	request(GetItemRequest(item_name))
+	request(GetItemRequest(item_name, 3))
 {
-	std::cout<<request<<std::endl;
 }
 
 static size_t WriteFunc(void* contents, size_t size, size_t nmemb, void* userp){
@@ -35,13 +40,26 @@ std::string PerformRequest(const std::string& request){
 
 void Item::Update( int delay ){
 	const std::string output=PerformRequest(request);
-	std::cout<<output<<std::endl;
 	rapidjson::Document json;
 	json.Parse(output.c_str());
-	std::cout<<json["median_price"].GetString()<<std::endl;
+
+	average_price = -1.;
+	if(json["success"].Get<bool>()){
+		const std::string temp_str = json["median_price"].GetString();
+
+		// remove currency sign from the end of string
+		const std::string str_no_curr = temp_str.substr(0, temp_str.find(',')+3);
+		average_price= std::stod(str_no_curr);
+	}
+
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 }
 
 double Item::GetPrice() const {
 	return average_price;
+}
+
+void Item::SetCurrency(int t){
+	curr=t;
+	request = GetItemRequest(name, curr);
 }

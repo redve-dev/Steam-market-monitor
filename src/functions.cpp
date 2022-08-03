@@ -1,7 +1,6 @@
 #include "functions.hpp"
 #include <string>
 #include <unordered_map>
-#include <iostream>
 
 std::string URLEncode(const std::string& input){
 	std::string result="";

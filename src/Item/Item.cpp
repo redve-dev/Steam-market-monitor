@@ -40,8 +40,8 @@ void PrintItemData(const Item& item, int curr){
 	//std::cout<<curr_map.at( curr )<<std::endl;
 	std::cout
 		<<std::right<<std::setw(50)<<item.name<<": "
-		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<item.GetPrice()
-		<<std::left<<std::setw(4)<<' '<<curr_map[curr]
+		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<item.GetPrice()<<' '
+		<<std::left<<std::setw(4)<<curr_map[curr]
 		<<std::endl;
 
 }

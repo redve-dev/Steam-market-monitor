@@ -1,5 +1,6 @@
 #include <iostream>
+#include "functions.hpp"
 
 int main(){
-	std::cout<<"hello\n";
+	std::cout<<GetItemRequest("Revolver Case");
 }

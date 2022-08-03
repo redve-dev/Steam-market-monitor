@@ -49,7 +49,16 @@ void Item::Update( int delay ){
 
 		// remove currency sign from the end of string
 		const std::string str_no_curr = temp_str.substr(0, temp_str.find(',')+3);
-		average_price= std::stod(str_no_curr);
+
+		// FIXME average_price is set to integer, instead to double
+		average_price= std::stod(str_no_curr.c_str());
+		std::cout<<temp_str<<std::endl;
+		std::cout<<str_no_curr.c_str()<<std::endl;
+		std::cout<<average_price<<std::endl;
+	}
+	else{
+		std::cerr<<"Couldn't perform request\n";
+		std::cout<<"api request: "<<request<<std::endl;
 	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));

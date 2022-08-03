@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <iostream>
 #include "functions.hpp"
 #include "Item/Item.hpp"
@@ -6,5 +7,4 @@
 int main(){
 	InputData data("items");
 	data.Update();
-	//data.Print();
 }

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Item.hpp"
 #include "../functions.hpp"
 #include <chrono>
@@ -48,13 +49,9 @@ void Item::Update( int delay ){
 		const std::string temp_str = json["median_price"].GetString();
 
 		// remove currency sign from the end of string
-		const std::string str_no_curr = temp_str.substr(0, temp_str.find(',')+3);
-
-		// FIXME average_price is set to integer, instead to double
-		average_price= std::stod(str_no_curr.c_str());
-		std::cout<<temp_str<<std::endl;
-		std::cout<<str_no_curr.c_str()<<std::endl;
-		std::cout<<average_price<<std::endl;
+		std::string str_no_curr = temp_str.substr(0, temp_str.find(',')+3);
+		std::replace(str_no_curr.begin(), str_no_curr.end(), ',', '.');
+		average_price= std::stod(str_no_curr);
 	}
 	else{
 		std::cerr<<"Couldn't perform request\n";

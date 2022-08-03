@@ -5,6 +5,7 @@
 #include <curl/easy.h>
 #include <iostream>
 #include <thread>
+#include "../rapidjson/document.h"
 
 Item::Item( const std::string& item_name):
 	name(item_name),
@@ -35,6 +36,9 @@ std::string PerformRequest(const std::string& request){
 void Item::Update( int delay ){
 	const std::string output=PerformRequest(request);
 	std::cout<<output<<std::endl;
+	rapidjson::Document json;
+	json.Parse(output.c_str());
+	std::cout<<json["median_price"].GetString()<<std::endl;
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 }
 

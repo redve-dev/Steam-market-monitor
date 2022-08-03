@@ -35,9 +35,8 @@ std::string URLEncode(const std::string& input){
 	return result;
 }
 
-std::string GetItemRequest(const std::string& item_name){
+std::string GetItemRequest(const std::string& item_name, int curr){
 	constexpr int appid=730;
-	constexpr int curr=3;
 	const std::string link="https://steamcommunity.com/market/priceoverview/?appid="+std::to_string(appid)+"&currency="+std::to_string(curr)+"&market_hash_name=";
 	return link + URLEncode(item_name);
 }

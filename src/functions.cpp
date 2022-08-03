@@ -35,6 +35,7 @@ std::string URLEncode(const std::string& input){
 }
 
 std::string GetItemRequest(const std::string& item_name, int curr){
+	// in case i want prices from another game
 	constexpr int appid=730;
 	const std::string link="https://steamcommunity.com/market/priceoverview/?appid="+std::to_string(appid)+"&currency="+std::to_string(curr)+"&market_hash_name=";
 	return link + URLEncode(item_name);

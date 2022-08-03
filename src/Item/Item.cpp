@@ -58,6 +58,7 @@ void Item::Update( int delay ){
 		std::cout<<"api request: "<<request<<std::endl;
 	}
 
+	std::cout<<name<<' '<<GetPrice()<<std::endl;
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 }
 

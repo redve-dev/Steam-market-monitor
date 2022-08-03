@@ -1,6 +1,8 @@
 #include <iostream>
 #include "functions.hpp"
+#include "Item/Item.hpp"
 
 int main(){
-	std::cout<<GetItemRequest("Revolver Case");
+	Item rev("Revolver Case");
+	rev.Update(5000);
 }

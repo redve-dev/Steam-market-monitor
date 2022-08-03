@@ -2,7 +2,7 @@ CXX		?= g++
 LFLAGS 	?= -lcurl
 DFLAGS	?= -pedantic -Wall -W -Wextra -Werror
 CFLAGS	?= -std=c++17
-OBJECTS	?= bin/functions.o bin/main.o
+OBJECTS	?= bin/functions.o bin/main.o bin/Item.o
 
 FLAGS	?= ${DFLAGS} ${CFLAGS} ${LFLAGS}
 
@@ -17,3 +17,6 @@ bin:
 
 clean:
 	rm -rf bin SMM
+
+bin/Item.o: src/Item/Item.cpp | bin
+	$(CXX) -c -o $@ $< $(FLAGS)

@@ -10,17 +10,10 @@
 #include <string>
 #include <map>
 
-Item::Item( const std::string& item_name, int currency):
+Item::Item( const std::string& item_name, int currency=13):
 	name(item_name),
 	request(GetItemRequest(item_name, currency)),
 	curr(currency)
-{
-}
-
-Item::Item( const std::string& item_name):
-	name(item_name),
-	request(GetItemRequest(item_name, 3)),
-	curr(3)
 {
 }
 
@@ -59,7 +52,7 @@ void Item::PrintItemData(ERROR_CODES error){
 
 	std::cout
 		<<std::right<<std::setw(50)<<name<<": "
-		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<average_price<<' '
+		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<price<<' '
 		<<std::left <<std::setw(4)<<curr_map[curr]
 		<<std::endl;
 }
@@ -79,10 +72,12 @@ std::string PerformRequest(const std::string& request){
 	return result;
 }
 
-double PriceFromString(std::string input){
+double PriceFromString(const std::string & input){
 	// price is in format XXXXXXXXX,XX CURRENCY
 	std::string str_no_curr = input.substr(0, input.find(',')+3);
 	std::replace(str_no_curr.begin(), str_no_curr.end(), ',', '.');
+	std::replace(str_no_curr.begin(), str_no_curr.end(), '-', '0');
+	str_no_curr.erase(std::remove_if(str_no_curr.begin(), str_no_curr.end(), [](unsigned char x){return std::isspace(x);}));
 	return std::stod(str_no_curr);
 }
 
@@ -96,9 +91,14 @@ void Item::Update( int delay ){
 
 	if( !json["success"].Get<bool>() )
 		return PrintItemData(ERROR_CODES::FAILED_TO_GET_DATA);
-	if( !json.HasMember("median_price"))
-		return PrintItemData(ERROR_CODES::NO_UNITS);
-	average_price = PriceFromString(json["median_price"].GetString());
-
-	PrintItemData(ERROR_CODES::NO_ERROR);
+	if( json.HasMember("median_price")){
+		price = PriceFromString(json["median_price"].GetString());
+		return PrintItemData(ERROR_CODES::NO_ERROR);
+	}
+	// extreme case, only 1 item on the market
+	if( json.HasMember("lowest_price")){
+		price = PriceFromString(json["lowest_price"].GetString());
+		return PrintItemData(ERROR_CODES::NO_ERROR);
+	}
+	return PrintItemData(ERROR_CODES::NO_UNITS);
 }

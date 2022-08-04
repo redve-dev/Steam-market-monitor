@@ -10,13 +10,12 @@ class Item {
 			NO_UNITS,
 			NO_ERROR
 		};
-		double average_price;
+		double price;
 		std::string request;
 		int curr;
 		ERROR_CODES error_code;
 	public:
 		explicit Item( const std::string&, int);
-		explicit Item( const std::string&);
 		Item() = default;
 		void Update( int delay );
 		void PrintItemData(ERROR_CODES);

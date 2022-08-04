@@ -19,6 +19,5 @@ class Item {
 		explicit Item( const std::string&);
 		Item() = default;
 		void Update( int delay );
-		void SetCurrency(int);
-		void PrintItemData();
+		void PrintItemData(ERROR_CODES);
 };

@@ -29,7 +29,7 @@ static size_t WriteFunc(void* contents, size_t size, size_t nmemb, void* userp){
 	return size * nmemb;
 }
 
-void Item::PrintItemData(){
+void Item::PrintItemData(ERROR_CODES error){
 	std::map<int, std::string> curr_map{
 		{1, "USD"},
 		{2, "GBP"},
@@ -37,9 +37,9 @@ void Item::PrintItemData(){
 		{6, "PLN"},
 	};
 
-	if ( error_code != ERROR_CODES::NO_ERROR ){
+	if ( error != ERROR_CODES::NO_ERROR ){
 		std::string error_msg="";
-		switch(error_code){
+		switch(error){
 			case ERROR_CODES::FAILED_TO_GET_DATA:
 				error_msg="FAIL";
 				break;
@@ -51,7 +51,8 @@ void Item::PrintItemData(){
 		}
 		std::cout
 			<<std::right<<std::setw(50)<<name<<": "
-			<<std::right<<std::setw(14)<<error_msg
+			// make proper error messege alignment
+			<<std::right<<std::setw(10+4)<<error_msg
 			<<std::endl;
 		return;
 	}
@@ -59,7 +60,7 @@ void Item::PrintItemData(){
 	std::cout
 		<<std::right<<std::setw(50)<<name<<": "
 		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<average_price<<' '
-		<<std::left<<std::setw(4)<<curr_map[curr]
+		<<std::left <<std::setw(4)<<curr_map[curr]
 		<<std::endl;
 }
 
@@ -78,6 +79,12 @@ std::string PerformRequest(const std::string& request){
 	return result;
 }
 
+double PriceFromString(std::string input){
+	std::string str_no_curr = input.substr(0, input.find(',')+3);
+	std::replace(str_no_curr.begin(), str_no_curr.end(), ',', '.');
+	return std::stod(str_no_curr);
+}
+
 void Item::Update( int delay ){
 	// prevent antispammer
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
@@ -86,29 +93,11 @@ void Item::Update( int delay ){
 	rapidjson::Document json;
 	json.Parse(output.c_str());
 
-	average_price = 0.;
-	error_code = ERROR_CODES::NO_ERROR;
-	if( !json["success"].Get<bool>() ){
-		std::cerr<<"Couldn't perform request for item: "<<name<<std::endl;
-		std::cerr<<"api request: "<<request<<std::endl<<std::endl;
-		error_code = ERROR_CODES::FAILED_TO_GET_DATA;
-		return PrintItemData();
-	}
-	if( !json.HasMember("median_price")){
-		error_code = ERROR_CODES::NO_UNITS;
-		return PrintItemData();
-	}
-	const std::string temp_str = json["median_price"].GetString();
+	if( !json["success"].Get<bool>() )
+		return PrintItemData(ERROR_CODES::FAILED_TO_GET_DATA);
+	if( !json.HasMember("median_price"))
+		return PrintItemData(ERROR_CODES::NO_UNITS);
+	average_price = PriceFromString(json["median_price"].GetString());
 
-	// remove currency sign from the end of string
-	std::string str_no_curr = temp_str.substr(0, temp_str.find(',')+3);
-	std::replace(str_no_curr.begin(), str_no_curr.end(), ',', '.');
-	average_price= std::stod(str_no_curr);
-
-	PrintItemData();
-}
-
-void Item::SetCurrency(int t){
-	curr=t;
-	request = GetItemRequest(name, curr);
+	PrintItemData(ERROR_CODES::NO_ERROR);
 }

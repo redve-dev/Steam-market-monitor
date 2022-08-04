@@ -51,8 +51,7 @@ void Item::PrintItemData(){
 		}
 		std::cout
 			<<std::right<<std::setw(50)<<name<<": "
-			<<std::right<<std::setw(10)<<error_msg<<' '
-			<<std::left<<std::setw(4)<<curr_map[curr]
+			<<std::right<<std::setw(14)<<error_msg
 			<<std::endl;
 		return;
 	}
@@ -80,36 +79,33 @@ std::string PerformRequest(const std::string& request){
 }
 
 void Item::Update( int delay ){
+	// prevent antispammer
+	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+
 	const std::string output=PerformRequest(request);
 	rapidjson::Document json;
 	json.Parse(output.c_str());
 
 	average_price = 0.;
 	error_code = ERROR_CODES::NO_ERROR;
-	if(json["success"].Get<bool>()){
-		if( !json.HasMember("median_price")){
-			error_code = ERROR_CODES::NO_UNITS;
-			PrintItemData();
-			return;
-		}
-		const std::string temp_str = json["median_price"].GetString();
-
-		// remove currency sign from the end of string
-		std::string str_no_curr = temp_str.substr(0, temp_str.find(',')+3);
-		std::replace(str_no_curr.begin(), str_no_curr.end(), ',', '.');
-		average_price= std::stod(str_no_curr);
-		PrintItemData();
-		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-		return;
+	if( !json["success"].Get<bool>() ){
+		std::cerr<<"Couldn't perform request for item: "<<name<<std::endl;
+		std::cerr<<"api request: "<<request<<std::endl<<std::endl;
+		error_code = ERROR_CODES::FAILED_TO_GET_DATA;
+		return PrintItemData();
 	}
-	std::cerr<<"Couldn't perform request for item: "<<name<<std::endl;
-	std::cerr<<"api request: "<<request<<std::endl<<std::endl;
-	error_code = ERROR_CODES::FAILED_TO_GET_DATA;
-	PrintItemData();
-}
+	if( !json.HasMember("median_price")){
+		error_code = ERROR_CODES::NO_UNITS;
+		return PrintItemData();
+	}
+	const std::string temp_str = json["median_price"].GetString();
 
-double Item::GetPrice() const {
-	return average_price;
+	// remove currency sign from the end of string
+	std::string str_no_curr = temp_str.substr(0, temp_str.find(',')+3);
+	std::replace(str_no_curr.begin(), str_no_curr.end(), ',', '.');
+	average_price= std::stod(str_no_curr);
+
+	PrintItemData();
 }
 
 void Item::SetCurrency(int t){

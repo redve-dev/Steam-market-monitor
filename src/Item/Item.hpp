@@ -19,7 +19,6 @@ class Item {
 		explicit Item( const std::string&);
 		Item() = default;
 		void Update( int delay );
-		double GetPrice() const;
 		void SetCurrency(int);
 		void PrintItemData();
 };

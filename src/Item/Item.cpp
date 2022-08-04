@@ -29,7 +29,7 @@ static size_t WriteFunc(void* contents, size_t size, size_t nmemb, void* userp){
 	return size * nmemb;
 }
 
-void PrintItemData(const Item& item, int curr){
+void Item::PrintItemData(){
 	std::map<int, std::string> curr_map{
 		{1, "USD"},
 		{2, "GBP"},
@@ -37,18 +37,29 @@ void PrintItemData(const Item& item, int curr){
 		{6, "PLN"},
 	};
 
-	if (item.GetPrice() < 0){
+	if ( error_code != ERROR_CODES::NO_ERROR ){
+		std::string error_msg="";
+		switch(error_code){
+			case ERROR_CODES::FAILED_TO_GET_DATA:
+				error_msg="FAIL";
+				break;
+			case ERROR_CODES::NO_UNITS:
+				error_msg="NO UNITS";
+				break;
+			default:
+				error_msg="UNKNOWN ERROR";
+		}
 		std::cout
-			<<std::right<<std::setw(50)<<item.name<<": "
-			<<std::right<<std::setw(10)<<"ERROR"<<' '
+			<<std::right<<std::setw(50)<<name<<": "
+			<<std::right<<std::setw(10)<<error_msg<<' '
 			<<std::left<<std::setw(4)<<curr_map[curr]
 			<<std::endl;
 		return;
 	}
 
 	std::cout
-		<<std::right<<std::setw(50)<<item.name<<": "
-		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<item.GetPrice()<<' '
+		<<std::right<<std::setw(50)<<name<<": "
+		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<average_price<<' '
 		<<std::left<<std::setw(4)<<curr_map[curr]
 		<<std::endl;
 }
@@ -72,25 +83,29 @@ void Item::Update( int delay ){
 	const std::string output=PerformRequest(request);
 	rapidjson::Document json;
 	json.Parse(output.c_str());
-	//std::cout<<request<<std::endl;
-	//std::cout<<output<<std::endl;
 
-	average_price = -1.;
+	average_price = 0.;
+	error_code = ERROR_CODES::NO_ERROR;
 	if(json["success"].Get<bool>()){
+		if( !json.HasMember("median_price")){
+			error_code = ERROR_CODES::NO_UNITS;
+			PrintItemData();
+			return;
+		}
 		const std::string temp_str = json["median_price"].GetString();
 
 		// remove currency sign from the end of string
 		std::string str_no_curr = temp_str.substr(0, temp_str.find(',')+3);
 		std::replace(str_no_curr.begin(), str_no_curr.end(), ',', '.');
 		average_price= std::stod(str_no_curr);
-		PrintItemData(*this, curr);
+		PrintItemData();
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+		return;
 	}
-	else{
-		std::cerr<<"Couldn't perform request\n";
-		std::cout<<"api request: "<<request<<std::endl;
-	}
-
+	std::cerr<<"Couldn't perform request for item: "<<name<<std::endl;
+	std::cerr<<"api request: "<<request<<std::endl<<std::endl;
+	error_code = ERROR_CODES::FAILED_TO_GET_DATA;
+	PrintItemData();
 }
 
 double Item::GetPrice() const {

@@ -54,6 +54,7 @@ std::string PerformRequest(const std::string& request){
 		curl_easy_setopt(curl, CURLOPT_URL, request.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteFunc);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
+		curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip");
 		curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
 	}

@@ -17,11 +17,6 @@ Item::Item( const std::string& item_name, int currency=13):
 {
 }
 
-static size_t WriteFunc(void* contents, size_t size, size_t nmemb, void* userp){
-	((std::string*)userp)->append((char*)contents, size * nmemb);
-	return size * nmemb;
-}
-
 void Item::PrintItemData(ERROR_CODES error){
 	std::map<int, std::string> curr_map{
 		{1, "USD"},
@@ -55,6 +50,11 @@ void Item::PrintItemData(ERROR_CODES error){
 		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<price<<' '
 		<<std::left <<std::setw(4)<<curr_map[curr]
 		<<std::endl;
+}
+
+static size_t WriteFunc(void* contents, size_t size, size_t nmemb, void* userp){
+	((std::string*)userp)->append((char*)contents, size * nmemb);
+	return size * nmemb;
 }
 
 std::string PerformRequest(const std::string& request){

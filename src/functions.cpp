@@ -2,7 +2,8 @@
 #include <string>
 #include <unordered_map>
 
-std::string URLEncode(const std::string& input){
+// input must be copied, to avoid manipulating original constant input
+std::string URLEncode(std::string input){
 	std::string result="";
 	const std::unordered_map<char, std::string> char_list{
 		{' ', "%20"},
@@ -26,6 +27,10 @@ std::string URLEncode(const std::string& input){
 		{'[', "%5B"},
 		{']', "%5D"},
 	};
+	if(input.substr(0, 8) == "StatTrak"){
+		// required character in case of StatTrak weapons
+		input.insert(8, "™");
+	}
 
 	for( char letter : input){
 		if( char_list.count(letter) ){ result += char_list.at(letter); }

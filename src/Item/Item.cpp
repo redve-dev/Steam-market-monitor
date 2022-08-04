@@ -80,6 +80,7 @@ std::string PerformRequest(const std::string& request){
 }
 
 double PriceFromString(std::string input){
+	// price is in format XXXXXXXXX,XX CURRENCY
 	std::string str_no_curr = input.substr(0, input.find(',')+3);
 	std::replace(str_no_curr.begin(), str_no_curr.end(), ',', '.');
 	return std::stod(str_no_curr);

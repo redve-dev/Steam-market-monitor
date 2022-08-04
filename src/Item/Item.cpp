@@ -36,14 +36,21 @@ void PrintItemData(const Item& item, int curr){
 		{3, "EUR"},
 		{6, "PLN"},
 	};
-	//std::cout<<curr<<std::endl;
-	//std::cout<<curr_map.at( curr )<<std::endl;
+
+	if (item.GetPrice() < 0){
+		std::cout
+			<<std::right<<std::setw(50)<<item.name<<": "
+			<<std::right<<std::setw(10)<<"ERROR"<<' '
+			<<std::left<<std::setw(4)<<curr_map[curr]
+			<<std::endl;
+		return;
+	}
+
 	std::cout
 		<<std::right<<std::setw(50)<<item.name<<": "
 		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<item.GetPrice()<<' '
 		<<std::left<<std::setw(4)<<curr_map[curr]
 		<<std::endl;
-
 }
 
 std::string PerformRequest(const std::string& request){
@@ -65,6 +72,8 @@ void Item::Update( int delay ){
 	const std::string output=PerformRequest(request);
 	rapidjson::Document json;
 	json.Parse(output.c_str());
+	//std::cout<<request<<std::endl;
+	//std::cout<<output<<std::endl;
 
 	average_price = -1.;
 	if(json["success"].Get<bool>()){
@@ -74,14 +83,14 @@ void Item::Update( int delay ){
 		std::string str_no_curr = temp_str.substr(0, temp_str.find(',')+3);
 		std::replace(str_no_curr.begin(), str_no_curr.end(), ',', '.');
 		average_price= std::stod(str_no_curr);
+		PrintItemData(*this, curr);
+		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	}
 	else{
 		std::cerr<<"Couldn't perform request\n";
 		std::cout<<"api request: "<<request<<std::endl;
 	}
 
-	PrintItemData(*this, curr);
-	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 }
 
 double Item::GetPrice() const {

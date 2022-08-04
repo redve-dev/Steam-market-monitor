@@ -38,7 +38,7 @@ void Item::PrintItemData(ERROR_CODES error){
 				error_msg="UNKNOWN ERROR";
 		}
 		std::cout
-			<<std::right<<std::setw(50)<<name<<": "
+			<<std::right<<std::setw(65)<<name<<": "
 			// make proper error messege alignment
 			<<std::right<<std::setw(10+4)<<error_msg
 			<<std::endl;
@@ -46,7 +46,7 @@ void Item::PrintItemData(ERROR_CODES error){
 	}
 
 	std::cout
-		<<std::right<<std::setw(50)<<name<<": "
+		<<std::right<<std::setw(65)<<name<<": "
 		<<std::right<<std::setw(10)<<std::setprecision(2)<<std::fixed<<price<<' '
 		<<std::left <<std::setw(4)<<curr_map[curr]
 		<<std::endl;

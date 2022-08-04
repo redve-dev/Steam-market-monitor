@@ -52,18 +52,18 @@ void Item::PrintItemData(ERROR_CODES error){
 		<<std::endl;
 }
 
-static size_t WriteFunc(void* contents, size_t size, size_t nmemb, void* userp){
-	((std::string*)userp)->append((char*)contents, size * nmemb);
-	return size * nmemb;
-}
 
 std::string PerformRequest(const std::string& request){
-	CURL* curl;
+	CURL* curl = curl_easy_init();
+	size_t (*Foo)(char*, size_t, size_t, std::string*) = 
+	[](char* contents, size_t size, size_t nmemb, std::string* userp){
+		userp->append(contents, size * nmemb);
+		return size * nmemb;
+	};
 	std::string result="";
-	curl = curl_easy_init();
 	if ( curl ){
 		curl_easy_setopt(curl, CURLOPT_URL, request.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteFunc);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Foo);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
 		curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip");
 		curl_easy_perform(curl);

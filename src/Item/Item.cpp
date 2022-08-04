@@ -77,7 +77,8 @@ double PriceFromString(const std::string & input){
 	std::string str_no_curr = input.substr(0, input.find(',')+3);
 	std::replace(str_no_curr.begin(), str_no_curr.end(), ',', '.');
 	std::replace(str_no_curr.begin(), str_no_curr.end(), '-', '0');
-	str_no_curr.erase(std::remove_if(str_no_curr.begin(), str_no_curr.end(), [](unsigned char x){return std::isspace(x);}));
+	// remove spaces
+	std::remove_if(str_no_curr.begin(), str_no_curr.end(), [](unsigned char x){return std::isspace(x);});
 	return std::stod(str_no_curr);
 }
 

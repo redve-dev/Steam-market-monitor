@@ -21,9 +21,3 @@ void InputData::Update(){
 		el.Update(delay);
 	}
 }
-
-void InputData::Print(){
-	for(const auto& el: items){
-		std::cout<<el.name<<' '<<el.GetPrice()<<std::endl;
-	}
-}

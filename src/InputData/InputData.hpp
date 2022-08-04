@@ -7,5 +7,4 @@ struct InputData{
 	int delay;
 	InputData(const std::string& path);
 	void Update();
-	void Print();
 };

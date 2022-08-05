@@ -10,6 +10,9 @@ InputData::InputData(const std::string& filepath){
 		f>>currency>>delay;
 		std::getline(f, name);
 		while(std::getline(f, name)){
+			if( name.empty() ){
+				continue;
+			}
 			items.push_back(Item(name, currency));
 		}
 	}

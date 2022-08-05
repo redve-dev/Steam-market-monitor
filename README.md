@@ -3,7 +3,14 @@
 A simple tool to automatically print prices of choosen items in 1 window.<br>
 To build, type 'make' in build directory (lib curl required).<br>
 
-then in file 'items' insert:<br>
+to use it, type<br>
+<b> ./steam-market-monitor \<path-to-file></b></br>
+for example:<br>
+./steam-market-monitor cases <br>
+
+If the path to file will be not provided, then program will look for file named items<br>
+
+To create your own items list, create a file with those arguments:<br>
 <b>currency</b> (1 - USD, 2 - GBP, 3 - EUR, 6 - PLN).<br>
 You can add any currency according to steam [documentation](https://partner.steamgames.com/doc/store/pricing/currencies) in file src/Item/Item.cpp.<br>
 Add it to hashmap in function Item::PrintItemData)<br>

@@ -3,6 +3,6 @@
 #include <iostream>
 
 int main() {
-   InputData data("items");
-   data.Update();
+	InputData data("items");
+	data.Update();
 }

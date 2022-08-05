@@ -1,3 +1,4 @@
+OUTPUT	?= steam-market-monitor
 CXX		?= g++
 LFLAGS 	?= -lcurl
 DFLAGS	?= -pedantic -Wall -W -Wextra -Werror
@@ -7,7 +8,7 @@ OBJECTS	?= bin/main.o bin/Item.o bin/InputData.o
 FLAGS	?= ${DFLAGS} ${CFLAGS} ${LFLAGS}
 
 target:	$(OBJECTS)
-	$(CXX) -o SMM $(OBJECTS) ${FLAGS}
+	$(CXX) -o ${OUTPUT} $(OBJECTS) ${FLAGS}
 
 bin/%.o: src/%.cpp | bin
 	$(CXX) -c -o $@ $< $(FLAGS)
@@ -16,7 +17,7 @@ bin:
 	mkdir -p $@
 
 clean:
-	rm -rf bin SMM
+	rm -rf bin ${OUTPUT}
 
 bin/Item.o: src/Item/Item.cpp src/Item/Item.hpp | bin
 	$(CXX) -c -o $@ $< $(FLAGS)

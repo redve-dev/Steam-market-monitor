@@ -1,5 +1,5 @@
+#include <array>
 #include "Item.hpp"
-#include "../functions.hpp"
 #include "../rapidjson/document.h"
 #include <algorithm>
 #include <chrono>
@@ -9,13 +9,16 @@
 #include <map>
 #include <string>
 #include <thread>
+#include <sstream>
 
 Item::Item(const std::string &item_name, int currency = 3)
-    : name(item_name), request(GetItemRequest(item_name, currency)),
-      curr(currency) {}
+    : name(item_name),
+      curr(currency) {
+		  GenerateItemRequest();
+	  }
 
 void Item::PrintItemData(ERROR_CODES error) {
-  std::map<int, std::string> curr_map{
+  static std::map<int, std::string> curr_map{
       {1, "USD"},
       {2, "GBP"},
       {3, "EUR"},
@@ -96,4 +99,34 @@ void Item::Update(int delay) {
     return PrintItemData(ERROR_CODES::NO_ERROR);
   }
   return PrintItemData(ERROR_CODES::NO_UNITS);
+}
+
+std::string URLEncode(std::string input) {
+  const static std::array<char, 21> reserved_chars{
+      ' ', '!', '#', '$', '%', '&', '\'', '(', ')', '*',
+      '+', ',', '/', ':', ';', '=', '?',  '@', '[', ']'};
+
+  auto char_to_hex = [](char c) {
+	std::ostringstream ss;
+	ss << "%"<<std::hex<<std::uppercase<<static_cast<int>(c);
+	return ss.str();
+  };
+
+  for (size_t i = 0; i < input.length(); i++) {
+    auto t =
+        std::find(reserved_chars.begin() + 0, reserved_chars.end(), input[i]);
+    if (t != reserved_chars.end()) {
+      input.replace(i, 1, char_to_hex(*t));
+      i += 2;
+    }
+  }
+  return input;
+}
+
+void Item::GenerateItemRequest() {
+  // in case i want prices from another game
+  const std::string link =
+      "https://steamcommunity.com/market/priceoverview/?appid=730&currency=" + std::to_string(curr) +
+      "&market_hash_name=";
+  request= link + URLEncode(name);
 }

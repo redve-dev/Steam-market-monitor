@@ -2,7 +2,7 @@ CXX		?= g++
 LFLAGS 	?= -lcurl
 DFLAGS	?= -pedantic -Wall -W -Wextra -Werror
 CFLAGS	?= -std=c++17
-OBJECTS	?= bin/functions.o bin/main.o bin/Item.o bin/InputData.o
+OBJECTS	?= bin/main.o bin/Item.o bin/InputData.o
 
 FLAGS	?= ${DFLAGS} ${CFLAGS} ${LFLAGS}
 

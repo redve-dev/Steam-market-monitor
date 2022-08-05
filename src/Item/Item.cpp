@@ -55,6 +55,7 @@ void Item::PrintItemData(ERROR_CODES error){
 
 std::string PerformRequest(const std::string& request){
 	CURL* curl = curl_easy_init();
+	// auto lambda returns wrong type
 	size_t (*WriteFunc)(char*, size_t, size_t, std::string*) = 
 		[](char* contents, size_t size, size_t nmemb, std::string* userp){
 			userp->append(contents, size * nmemb);

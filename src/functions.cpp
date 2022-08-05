@@ -3,33 +3,38 @@
 #include <unordered_map>
 
 // input must be copied, to avoid manipulating original constant input
+#include <iostream>
 std::string URLEncode(std::string input){
 	std::string result="";
 	const std::unordered_map<char, std::string> char_list{
-		{' ', "%20"},
-		{'!', "%21"},
-		{'#', "%23"},
-		{'$', "%24"},
-		{'%', "%25"},
-		{'&', "%26"},
-		{'\'', "%27"},
-		{'(', "%28"},
-		{')', "%29"},
-		{'*', "%2A"},
-		{'+', "%2B"},
-		{',', "%2C"},
-		{'/', "%2F"},
-		{':', "%3A"},
-		{';', "%3B"},
-		{'=', "%3D"},
-		{'?', "%3F"},
-		{'@', "%40"},
-		{'[', "%5B"},
-		{']', "%5D"},
+			{' ', "%20"},
+			{'!', "%21"},
+			{'#', "%23"},
+			{'$', "%24"},
+			{'%', "%25"},
+			{'&', "%26"},
+			{'\'', "%27"},
+			{'(', "%28"},
+			{')', "%29"},
+			{'*', "%2A"},
+			{'+', "%2B"},
+			{',', "%2C"},
+			{'/', "%2F"},
+			{':', "%3A"},
+			{';', "%3B"},
+			{'=', "%3D"},
+			{'?', "%3F"},
+			{'@', "%40"},
+			{'[', "%5B"},
+			{']', "%5D"},
 	};
 	if(input.substr(0, 8) == "StatTrak"){
 		// required character in case of StatTrak weapons
-		input.insert(8, "™");
+		//FIXME ignore tm character if it's already in
+		//long t='™';
+		//std::cout<<t<<std::endl;
+		//if(input.substr(8, 1) != "™")
+			input.insert(8, "™");
 	}
 
 	for( char letter : input){

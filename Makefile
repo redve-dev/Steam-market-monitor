@@ -24,3 +24,6 @@ bin/Item.o: src/Item/Item.cpp src/Item/Item.hpp | bin
 
 bin/InputData.o: src/InputData/InputData.cpp src/InputData/InputData.hpp | bin
 	$(CXX) -c -o $@ $< $(FLAGS)
+
+format:
+	clang-format -i src/main.cpp src/Item/* src/InputData/*

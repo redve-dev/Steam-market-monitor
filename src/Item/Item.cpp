@@ -2,14 +2,14 @@
 #include "../rapidjson/document.h"
 #include <algorithm>
 #include <array>
-#include <chrono>
 #include <curl/curl.h>
 #include <iomanip>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <sstream>
 #include <string>
 #include <thread>
+#include <chrono>
 
 Item::Item(const std::string &item_name, int currency = 3)
 	: name(item_name), curr(currency) {
@@ -17,7 +17,7 @@ Item::Item(const std::string &item_name, int currency = 3)
 }
 
 void Item::PrintItemData(ERROR_CODES error) {
-	static std::map<int, std::string> curr_map{
+	static std::unordered_map<int, std::string> curr_map{
 		{1, "USD"},
 		{2, "GBP"},
 		{3, "EUR"},
@@ -49,17 +49,22 @@ void Item::PrintItemData(ERROR_CODES error) {
 			  << std::endl;
 }
 
-std::string PerformRequest(const std::string &request) {
+size_t WriteFunc(char *contents, size_t size, size_t nmemb, std::string *userp) {
+	userp->append(contents, size * nmemb);
+	return size * nmemb;
+}
+
+std::string Item::PerformRequest() {
 	CURL *curl = curl_easy_init();
-	// auto lambda returns wrong type
-	size_t (*WriteFunc)(char *, size_t, size_t, std::string *) =
-		[](char *contents, size_t size, size_t nmemb, std::string *userp) {
-			userp->append(contents, size * nmemb);
-			return size * nmemb;
-		};
-	std::string result = "";
+	const static std::string link =
+		"https://steamcommunity.com/market/priceoverview/?appid=730&currency=" +
+		std::to_string(curr) + "&market_hash_name=";
+
+	std::string result="";
 	if (curl) {
-		curl_easy_setopt(curl, CURLOPT_URL, request.c_str());
+		const auto encoded_name = curl_easy_escape(curl, name.c_str(), name.length());
+		const auto encoded_link = link+encoded_name;
+		curl_easy_setopt(curl, CURLOPT_URL, encoded_link.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteFunc);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
 		curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip");
@@ -71,7 +76,6 @@ std::string PerformRequest(const std::string &request) {
 
 double PriceFromString(std::string input) {
 	// remove special characters
-
 	auto IsNOTDigitOrDot = [](unsigned char x) {
 		bool IsNum = x >= '0' && x <= '9';
 		bool IsDot = x == '.' || x == ',';
@@ -89,7 +93,7 @@ void Item::Update(int delay) {
 	// prevent antispammer
 	std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 
-	const std::string output = PerformRequest(request);
+	const std::string output = PerformRequest();
 	rapidjson::Document json;
 	json.Parse(output.c_str());
 
@@ -105,34 +109,4 @@ void Item::Update(int delay) {
 		return PrintItemData(ERROR_CODES::NO_ERROR);
 	}
 	return PrintItemData(ERROR_CODES::NO_UNITS);
-}
-
-std::string URLEncode(std::string input) {
-	constexpr static std::array<char, 21> reserved_chars{
-		' ', '!', '#', '$', '%', '&', '\'', '(', ')', '*',
-		'+', ',', '/', ':', ';', '=', '?',	'@', '[', ']'};
-
-	auto char_to_hex = [](char c) {
-		std::ostringstream ss;
-		ss << "%" << std::hex << std::uppercase << static_cast<int>(c);
-		return ss.str();
-	};
-
-	for (size_t i = 0; i < input.length(); i++) {
-		auto t = std::find(reserved_chars.begin() + 0, reserved_chars.end(),
-						   input[i]);
-		if (t != reserved_chars.end()) {
-			input.replace(i, 1, char_to_hex(*t));
-			i += 2;
-		}
-	}
-	return input;
-}
-
-void Item::GenerateItemRequest() {
-	// in case i want prices from another game
-	const std::string link =
-		"https://steamcommunity.com/market/priceoverview/?appid=730&currency=" +
-		std::to_string(curr) + "&market_hash_name=";
-	request = link + URLEncode(name);
 }

@@ -13,4 +13,5 @@ int main(int argc, char **args) {
 	}
 	InputData data(file);
 	data.Update();
+	data.PrintAll();
 }

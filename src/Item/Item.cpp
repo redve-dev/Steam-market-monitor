@@ -13,40 +13,6 @@
 
 Item::Item(const std::string &item_name, int currency = 3)
 	: name(item_name), curr(currency) {
-	GenerateItemRequest();
-}
-
-void Item::PrintItemData(ERROR_CODES error) {
-	static std::unordered_map<int, std::string> curr_map{
-		{1, "USD"},
-		{2, "GBP"},
-		{3, "EUR"},
-		{6, "PLN"},
-	};
-
-	if (error != ERROR_CODES::NO_ERROR) {
-		std::string error_msg = "";
-		switch (error) {
-		case ERROR_CODES::FAILED_TO_GET_DATA:
-			error_msg = "FAIL";
-			break;
-		case ERROR_CODES::NO_UNITS:
-			error_msg = "NO UNITS";
-			break;
-		default:
-			error_msg = "UNKNOWN ERROR";
-		}
-		std::cout << std::right << std::setw(65) << name
-				  << ": "
-				  // make proper error messege alignment
-				  << std::right << std::setw(10 + 4) << error_msg << std::endl;
-		return;
-	}
-
-	std::cout << std::right << std::setw(65) << name << ": " << std::right
-			  << std::setw(10) << std::setprecision(2) << std::fixed << price
-			  << ' ' << std::left << std::setw(4) << curr_map[curr]
-			  << std::endl;
 }
 
 size_t WriteFunc(char *contents, size_t size, size_t nmemb, std::string *userp) {
@@ -97,16 +63,20 @@ void Item::Update(int delay) {
 	rapidjson::Document json;
 	json.Parse(output.c_str());
 
-	if (!json["success"].Get<bool>())
-		return PrintItemData(ERROR_CODES::FAILED_TO_GET_DATA);
+	if (!json["success"].Get<bool>()){
+		error_code = ERROR_CODES::FAILED_TO_GET_DATA;
+		return;
+	}
 	if (json.HasMember("median_price")) {
 		price = PriceFromString(json["median_price"].GetString());
-		return PrintItemData(ERROR_CODES::NO_ERROR);
+		error_code = ERROR_CODES::NO_ERROR;
+		return;
 	}
 	// extreme case, only 1 item on the market
 	if (json.HasMember("lowest_price")) {
 		price = PriceFromString(json["lowest_price"].GetString());
-		return PrintItemData(ERROR_CODES::NO_ERROR);
+		return;
 	}
-	return PrintItemData(ERROR_CODES::NO_UNITS);
+		error_code = ERROR_CODES::NO_UNITS;
+	return;
 }

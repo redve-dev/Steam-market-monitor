@@ -1,4 +1,4 @@
-#include "InputData/InputData.hpp"
+#include "Interface/Interface.hpp"
 #include <string>
 
 int main(int argc, char **args) {
@@ -9,7 +9,7 @@ int main(int argc, char **args) {
 			file = "items";
 		}
 	}
-	InputData data(file);
+	Interface data(file);
 	data.Update();
 	data.PrintAll();
 }

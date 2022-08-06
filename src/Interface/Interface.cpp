@@ -1,14 +1,13 @@
-#include "InputData.hpp"
+#include "Interface.hpp"
 #include "../rapidjson/document.h"
 #include <cstdlib>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <string>
 
-InputData::InputData(const std::string &filepath) { LoadFile(filepath); }
+Interface::Interface(const std::string &filepath) { LoadFile(filepath); }
 
-void InputData::Update() {
+void Interface::Update() {
 	for (auto &el : items) {
 		el.Update(delay);
 	}
@@ -29,13 +28,13 @@ std::string GetCurrencyName(int curr) {
 	}
 }
 
-void InputData::PrintAll() {
+void Interface::PrintAll() {
 	for (size_t i = 0; i < items.size(); i++) {
 		PrintOne(i);
 	}
 }
 
-void InputData::PrintOne(int index) {
+void Interface::PrintOne(int index) {
 	const auto name = items.at(index).name;
 	const auto price = items.at(index).price;
 	const auto curr = GetCurrencyName(items.at(index).curr);
@@ -61,7 +60,7 @@ void InputData::PrintOne(int index) {
 	return;
 }
 
-void InputData::LoadFile(const std::string &path) {
+void Interface::LoadFile(const std::string &path) {
 	items.clear();
 	std::ifstream f(path);
 	if (f.good()) {

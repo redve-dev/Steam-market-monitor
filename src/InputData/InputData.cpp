@@ -13,7 +13,7 @@ InputData::InputData(const std::string &filepath) {
 			if (name.empty()) {
 				continue;
 			}
-			items.push_back(Item(name, currency));
+			items.emplace_back(name, currency);
 		}
 	}
 	f.close();

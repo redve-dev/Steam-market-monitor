@@ -1,7 +1,6 @@
 # Steam market monitor
 
-<b> OUTDATED, CREATING UPDATED VERSION IS IN PROGRESS</b>
-
+<b> OUTDATED, TO CREATE ITEM LIST LOOK TO 'items.json' </b>
 A simple tool to automatically print prices of choosen items in 1 window.<br>
 To build, type 'make' in build directory (lib curl required).<br>
 

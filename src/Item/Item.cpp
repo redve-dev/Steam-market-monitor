@@ -1,16 +1,16 @@
 #include "Item.hpp"
 #include "../rapidjson/document.h"
 #include <algorithm>
+#include <chrono>
 #include <curl/curl.h>
 #include <string>
 #include <thread>
-#include <chrono>
 
 Item::Item(const std::string &item_name, int currency = 3)
-	: name(item_name), curr(currency) {
-}
+	: name(item_name), curr(currency) {}
 
-size_t WriteFunc(char *contents, size_t size, size_t nmemb, std::string *userp) {
+size_t WriteFunc(char *contents, size_t size, size_t nmemb,
+				 std::string *userp) {
 	userp->append(contents, size * nmemb);
 	return size * nmemb;
 }
@@ -21,10 +21,11 @@ std::string Item::PerformRequest() {
 		"https://steamcommunity.com/market/priceoverview/?appid=730&currency=" +
 		std::to_string(curr) + "&market_hash_name=";
 
-	std::string result="";
+	std::string result = "";
 	if (curl) {
-		const auto encoded_name = curl_easy_escape(curl, name.c_str(), name.length());
-		const auto encoded_link = link+encoded_name;
+		const auto encoded_name =
+			curl_easy_escape(curl, name.c_str(), name.length());
+		const auto encoded_link = link + encoded_name;
 		curl_easy_setopt(curl, CURLOPT_URL, encoded_link.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteFunc);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
@@ -58,7 +59,7 @@ void Item::Update(int delay) {
 	rapidjson::Document json;
 	json.Parse(output.c_str());
 
-	if (!json["success"].Get<bool>()){
+	if (!json["success"].Get<bool>()) {
 		error_code = ERROR_CODES::FAILED_TO_GET_DATA;
 		return;
 	}
@@ -70,8 +71,9 @@ void Item::Update(int delay) {
 	// extreme case, only 1 item on the market
 	if (json.HasMember("lowest_price")) {
 		price = PriceFromString(json["lowest_price"].GetString());
+		error_code = ERROR_CODES::NO_ERROR;
 		return;
 	}
-		error_code = ERROR_CODES::NO_UNITS;
+	error_code = ERROR_CODES::NO_UNITS;
 	return;
 }

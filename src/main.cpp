@@ -1,6 +1,4 @@
 #include "InputData/InputData.hpp"
-#include "Item/Item.hpp"
-#include <iostream>
 #include <string>
 
 int main(int argc, char **args) {

@@ -1,22 +1,13 @@
 #include "InputData.hpp"
+#include <sstream>
+#include "../rapidjson/document.h"
 #include <fstream>
 #include <string>
 #include <cstdlib>
+#include <iostream>
 
 InputData::InputData(const std::string &filepath) {
-	std::ifstream f(filepath);
-	if (f.good()) {
-		std::string name = "";
-		f >> currency >> delay;
-		std::getline(f, name);
-		while (std::getline(f, name)) {
-			if (name.empty()) {
-				continue;
-			}
-			items.emplace_back(name, currency);
-		}
-	}
-	f.close();
+	LoadFile(filepath);
 }
 
 void InputData::Update() {
@@ -70,4 +61,22 @@ void InputData::PrintOne(int index){
 	}
 	printf("%10.2lf %s\n", price, curr.c_str());
 	return;
+}
+
+void InputData::LoadFile(const std::string& path){
+	items.clear();
+	std::ifstream f(path);
+	if (f.good()) {
+		std::stringstream buffer;
+		buffer << f.rdbuf();
+		const auto json_str = buffer.str();
+		rapidjson::Document json;
+		json.Parse(json_str.c_str());
+		if(json["items"].IsArray()){
+			for(auto& el: json["items"].GetArray()){
+				std::cout<<el.GetString()<<std::endl;
+			}
+		}
+	}
+	f.close();
 }

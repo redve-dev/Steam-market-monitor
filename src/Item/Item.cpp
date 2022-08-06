@@ -1,12 +1,7 @@
 #include "Item.hpp"
 #include "../rapidjson/document.h"
 #include <algorithm>
-#include <array>
 #include <curl/curl.h>
-#include <iomanip>
-#include <iostream>
-#include <unordered_map>
-#include <sstream>
 #include <string>
 #include <thread>
 #include <chrono>

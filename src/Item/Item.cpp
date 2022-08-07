@@ -5,9 +5,11 @@
 #include <curl/curl.h>
 #include <string>
 #include <thread>
+#include <iostream>
 
-Item::Item(const std::string &item_name, int currency = 3)
-	: name(item_name), curr(currency) {}
+
+Item::Item(const std::string &item_name, bool st=false)
+	: name(item_name), StatTrak(st), state(QUALITY::NO_QUALITY) {}
 
 size_t WriteFunc(char *contents, size_t size, size_t nmemb,
 				 std::string *userp) {
@@ -17,15 +19,14 @@ size_t WriteFunc(char *contents, size_t size, size_t nmemb,
 
 std::string Item::PerformRequest() {
 	CURL *curl = curl_easy_init();
-	const static std::string link =
-		"https://steamcommunity.com/market/priceoverview/?appid=730&currency=" +
-		std::to_string(curr) + "&market_hash_name=";
 
 	std::string result = "";
 	if (curl) {
+		const auto combined_name=GenerateName();
 		const auto encoded_name =
-			curl_easy_escape(curl, name.c_str(), name.length());
-		const auto encoded_link = link + encoded_name;
+			curl_easy_escape(curl, combined_name.c_str(), combined_name.length());
+		const auto encoded_link = request + encoded_name;
+		std::cout<<encoded_link<<std::endl;
 		curl_easy_setopt(curl, CURLOPT_URL, encoded_link.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteFunc);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
@@ -76,4 +77,44 @@ void Item::Update(int delay) {
 	}
 	error_code = ERROR_CODES::NO_UNITS;
 	return;
+}
+
+void Item::GenerateRequest(int curr){
+	request="https://steamcommunity.com/market/priceoverview/?appid=730&currency=" +
+		std::to_string(curr) + "&market_hash_name=";
+}
+
+std::string Item::GetQuality(){
+	using enum QUALITY;
+	switch (state) {
+		case FACTORY_NEW:
+			return " (Factory New)";
+		case MINIMAL_WEAR:
+			return " (Minimal Wear)";
+		case FIELD_TESTED:
+			return " (Field-Tested)";
+		case WELL_WORN:
+			return " (Well-Worn)";
+		case BATTLE_SCARRED:
+			return " (Battle-Scarred)";
+		case NO_QUALITY:
+			return "";
+		default:
+		return "ERROR";
+	}
+}
+
+std::string Item::GenerateName(){
+	std::string result="";
+	if (StatTrak) {
+		result += "StatTrak™ ";
+	}
+	result += name;
+	result += GetQuality();
+	return result;
+}
+
+void Item::SetQuality(const std::string& quality){
+	std::cout<<quality<<std::endl;
+	state = Item::QUALITY::FIELD_TESTED;
 }

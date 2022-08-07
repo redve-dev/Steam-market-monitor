@@ -1,4 +1,5 @@
 #include "Interface.hpp"
+#include <iostream>
 #include "../rapidjson/document.h"
 #include <cstdlib>
 #include <fstream>
@@ -37,7 +38,6 @@ void Interface::PrintAll() {
 void Interface::PrintOne(int index) {
 	const auto name = items.at(index).name;
 	const auto price = items.at(index).price;
-	const auto curr = GetCurrencyName(items.at(index).curr);
 
 	printf("%70s ", name.c_str());
 	if (items.at(index).error_code != Item::ERROR_CODES::NO_ERROR) {
@@ -48,15 +48,13 @@ void Interface::PrintOne(int index) {
 		case Item::ERROR_CODES::NO_UNITS:
 			printf("NO_UNITS\n");
 			break;
-		case Item::ERROR_CODES::NO_ERROR:
-			break;
 		default:
 			printf("UNDEFINED ERROR\n");
 			break;
 		}
 		return;
 	}
-	printf("%10.2lf %s\n", price, curr.c_str());
+	printf("%10.2lf %s\n", price, "PLN");
 	return;
 }
 
@@ -70,9 +68,19 @@ void Interface::LoadFile(const std::string &path) {
 		rapidjson::Document json;
 		json.Parse(json_str.c_str());
 		delay = json["delay"].Get<int>();
+		Item::GenerateRequest(json["currency"].Get<int>());
 		if (json["items"].IsArray()) {
 			for (auto &el : json["items"].GetArray()) {
-				items.emplace_back(el.GetString(), json["currency"].Get<int>());
+				auto name = el["name"].GetString();
+				if ( el.HasMember("ST")){
+					auto stattrak = el["ST"].Get<bool>();
+					auto condition = el["condition"].GetString();
+					items.emplace_back(name, stattrak);
+					items.back().SetQuality(condition);
+					continue;
+				}
+				items.emplace_back(name, false);
+
 			}
 		}
 	}

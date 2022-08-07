@@ -1,9 +1,19 @@
 {
 	"currency": 6,
-	"delay": 50,
+	"delay": 3500,
 	"items": [
-		"Operation Vanguard Weapon Case",
-		"StatTrak™ AK-47 | Fire Serpent (Battle-Scarred)",
-		"AWP | POP AWP (Minimal Wear)"
+		{
+			"name": "AK-47 | Fire Serpent",
+			"ST": true,
+			"condition": "test"
+		},
+		{
+			"name": "AWP | Dragon Lore",
+			"ST": false,
+			"condition": "test"
+		},
+		{
+			"name": "Revolver Case"
+		}
 	]
 }

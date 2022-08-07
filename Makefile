@@ -2,7 +2,7 @@ OUTPUT	?= steam-market-monitor
 CXX		?= g++
 LFLAGS 	?= -lcurl
 DFLAGS	?= -pedantic -Wall -W -Wextra -Werror
-CFLAGS	?= -std=c++17
+CFLAGS	?= -std=c++20
 OBJECTS	?= bin/main.o bin/Item.o bin/Interface.o
 
 FLAGS	?= ${DFLAGS} ${CFLAGS} ${LFLAGS}

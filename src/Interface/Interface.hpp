@@ -10,7 +10,7 @@ class Interface {
 
   public:
 	explicit Interface(const std::string &path);
-	void LoadFile(const std::string &path);
+	void LoadFromFile(const std::string &path);
 	void Update();
 	void PrintAll();
 	void PrintOne(int index);

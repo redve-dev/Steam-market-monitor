@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 
-Interface::Interface(const std::string &filepath) { LoadFile(filepath); }
+Interface::Interface(const std::string &filepath) { LoadFromFile(filepath); }
 
 void Interface::Update() {
 	for (auto &el : items) {
@@ -38,6 +38,9 @@ void Interface::PrintAll() {
 void Interface::PrintOne(int index) {
 	const auto name = items.at(index).name;
 	const auto price = items.at(index).price;
+	const auto error_code = items.at(index).error_code;
+	const auto special = items.at(index).special;
+	const auto condition = items.at(index).condition;
 
 	printf("%70s ", name.c_str());
 	if (items.at(index).error_code != Item::ERROR_CODES::NO_ERROR) {
@@ -58,7 +61,21 @@ void Interface::PrintOne(int index) {
 	return;
 }
 
-void Interface::LoadFile(const std::string &path) {
+Item ReadItem(const auto& el){
+	auto name = el["name"].GetString();
+	Item object(name);
+	if ( el.HasMember("condition")){
+		auto condition = el["condition"].GetString();
+		object.SetQuality(condition);
+		if (el.HasMember("special")){
+			auto special = el["special"].GetString();
+			object.SetSpecial(special);
+		}
+	}
+	return object;
+}
+
+void Interface::LoadFromFile(const std::string &path) {
 	items.clear();
 	std::ifstream f(path);
 	if (f.good()) {
@@ -71,16 +88,7 @@ void Interface::LoadFile(const std::string &path) {
 		Item::GenerateRequest(json["currency"].Get<int>());
 		if (json["items"].IsArray()) {
 			for (auto &el : json["items"].GetArray()) {
-				auto name = el["name"].GetString();
-				if ( el.HasMember("ST")){
-					auto stattrak = el["ST"].Get<bool>();
-					auto condition = el["condition"].GetString();
-					items.emplace_back(name, stattrak);
-					items.back().SetQuality(condition);
-					continue;
-				}
-				items.emplace_back(name, false);
-
+				items.push_back(ReadItem(el));
 			}
 		}
 	}

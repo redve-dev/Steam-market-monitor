@@ -8,8 +8,8 @@
 #include <iostream>
 
 
-Item::Item(const std::string &item_name, bool st=false)
-	: name(item_name), StatTrak(st), state(QUALITY::NO_QUALITY) {}
+Item::Item(const std::string &item_name)
+	: name(item_name), condition(QUALITY::NO_QUALITY), special(SPECIAL::NO_SPECIAL) {}
 
 size_t WriteFunc(char *contents, size_t size, size_t nmemb,
 				 std::string *userp) {
@@ -26,7 +26,6 @@ std::string Item::PerformRequest() {
 		const auto encoded_name =
 			curl_easy_escape(curl, combined_name.c_str(), combined_name.length());
 		const auto encoded_link = request + encoded_name;
-		std::cout<<encoded_link<<std::endl;
 		curl_easy_setopt(curl, CURLOPT_URL, encoded_link.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteFunc);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
@@ -86,7 +85,7 @@ void Item::GenerateRequest(int curr){
 
 std::string Item::GetQuality(){
 	using enum QUALITY;
-	switch (state) {
+	switch (condition) {
 		case FACTORY_NEW:
 			return " (Factory New)";
 		case MINIMAL_WEAR:
@@ -100,21 +99,49 @@ std::string Item::GetQuality(){
 		case NO_QUALITY:
 			return "";
 		default:
-		return "ERROR";
+			return "";
+	}
+}
+
+std::string Item::GetSpecials(){
+	using enum SPECIAL;
+	switch (special){
+		case STATTRAK:
+			return "StatTrak™ ";
+		case SOUVENIR:
+			return "Souvenir ";
+		case NO_SPECIAL:
+			return "";
+		default:
+			return "";
 	}
 }
 
 std::string Item::GenerateName(){
 	std::string result="";
-	if (StatTrak) {
-		result += "StatTrak™ ";
-	}
+	result += GetSpecials();
 	result += name;
 	result += GetQuality();
 	return result;
 }
 
 void Item::SetQuality(const std::string& quality){
-	std::cout<<quality<<std::endl;
-	state = Item::QUALITY::FIELD_TESTED;
+	using enum QUALITY;
+	if (quality == "Factory New")
+		this->condition = FACTORY_NEW;
+	if (quality == "Minimal Wear")
+		this->condition = MINIMAL_WEAR;
+	if (quality == "Field Tested")
+		this->condition = FIELD_TESTED;
+	if (quality == "Well Worn")
+		this->condition = WELL_WORN;
+	if (quality == "Battle Scarred")
+		this->condition = BATTLE_SCARRED;
+}
+
+void Item::SetSpecial(const std::string& special){
+	if (special == "StatTrak")
+		this->special = SPECIAL::STATTRAK;
+	if (special == "Souvenir")
+		this->special = SPECIAL::SOUVENIR;
 }

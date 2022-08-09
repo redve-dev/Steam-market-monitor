@@ -7,6 +7,7 @@ class Interface {
 	std::vector<Item> items;
 	int delay;
 	void LoadCurrency(const std::string &path);
+	int curr;
 
   public:
 	explicit Interface(const std::string &path);

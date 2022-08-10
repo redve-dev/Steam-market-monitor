@@ -3,6 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include <array>
+#include <iostream>
+#include <utility>
 
 MessegeGenerator::MessegeGenerator(){
 }
@@ -17,7 +19,7 @@ rapidjson::Document LoadDictionary(const std::string& path){
 		std::stringstream buffer;
 		buffer << f.rdbuf();
 		const auto json_str = buffer.str();
-		rapidjson::Document json;
+		
 		json.Parse(json_str.c_str());
 	}
 	f.close();
@@ -34,8 +36,22 @@ void MessegeGenerator::LoadDictionaryErrors(const std::string& path){
 
 	for(auto & el : elements){
 		if (dictionary.HasMember(el.c_str())){
-			errors[el] = dictionary[el.c_str()].GetString()
+			errors[el] = dictionary[el.c_str()].GetString();
 		}
+	}
+}
+
+std::string MessegeGenerator::GetError(Item::ERROR_CODES e){
+	using enum Item::ERROR_CODES;
+	switch(e){
+		case FAILED_TO_GET_DATA:
+			return errors["FAILED_TO_GET_DATA"];
+		case NO_UNITS:
+			return errors["NO_UNITS"];
+		case NO_ERROR:
+			return "";
+		default:
+			return "UKNOWN_ERROR";
 	}
 }
 
@@ -44,15 +60,27 @@ void MessegeGenerator::LoadDictionarySpecials(const std::string& path){
 	static const std::array<std::string, 3> elements{
 		"STATTRAK",
 		"SOUVENIR",
-		"NO_SPECIAL"
-	};
+		"NO_SPECIAL"};
 
 	for(auto & el : elements){
 		if (dictionary.HasMember(el.c_str())){
-			errors[el] = dictionary[el.c_str()].GetString()
+			specials[el] = dictionary[el.c_str()].GetString();
 		}
 	}
+}
 
+std::string MessegeGenerator::GetSpecial(Item::SPECIAL s){
+	using enum Item::SPECIAL;
+	switch(s){
+		case STATTRAK:
+			return specials["STATTRAK"];
+		case SOUVENIR:
+			return specials["SOUVENIR"];
+		case NO_SPECIAL:
+			return "";
+		default:
+			return "UKNOWN_SPECIAL";
+	}
 }
 
 void MessegeGenerator::LoadDictionaryConditions(const std::string& path){
@@ -63,28 +91,37 @@ void MessegeGenerator::LoadDictionaryConditions(const std::string& path){
 		"FIELD_TESTED",
 		"WELL_WORN",
 		"BATTLE_SCARRED",
-		"NO_QUALITY"
-	};
+		"NO_QUALITY"};
 
 	for(auto & el : elements){
 		if (dictionary.HasMember(el.c_str())){
-			errors[el] = dictionary[el.c_str()].GetString()
+			condition[el] = dictionary[el.c_str()].GetString();
 		}
 	}
-
 }
-void MessegeGenerator::LoadDictionaryCurrency(const std::string& path){
-	auto dictionary = LoadDictionary(path);
-	static const std::array<std::string, 3> elements{
-		"FAILED_TO_GET_DATA",
-		"NO_UNITS",
-		"NO_ERROR"
-	};
 
-	for(auto & el : elements){
-		if (dictionary.HasMember(el.c_str())){
-			errors[el] = dictionary[el.c_str()].GetString()
-		}
+std::string MessegeGenerator::GetCondition(Item::QUALITY q){
+	using enum Item::QUALITY;
+	switch(q){
+		case FACTORY_NEW:
+			return condition["FACTORY_NEW"];
+		case MINIMAL_WEAR:
+			return condition["MINIMAL_WEAR"];
+		case FIELD_TESTED:
+			return condition["FIELD_TESTED"];
+		case WELL_WORN:
+			return condition["WELL_WORN"];
+		case BATTLE_SCARRED:
+			return condition["BATTLE_SCARRED"];
+		case NO_QUALITY:
+			return "";
+		default:
+			return "UKNOWN_CONDITION";
 	}
+}
 
+void MessegeGenerator::LoadDictionaries(const std::string& path){
+	LoadDictionaryConditions(path+"condition.json");
+	LoadDictionaryErrors(path+"errors.json");
+	LoadDictionarySpecials(path+"specials.json");
 }

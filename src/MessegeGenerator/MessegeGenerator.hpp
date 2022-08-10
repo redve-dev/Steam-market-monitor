@@ -1,11 +1,10 @@
+#pragma once
 #include "../Item/Item.hpp"
 #include <unordered_map>
 
 class MessegeGenerator {
 	private:
-		std::unordered_map<Item::ERROR_CODES, std::string> errors;
-		std::unordered_map<Item::SPECIAL, std::string> specials;
-		std::unordered_map<Item::QUALITY, std::string> condition;
+		std::unordered_map<std::string, std::string> errors, specials, condition;
 		std::unordered_map<int, std::string> currency;
 		void LoadDictionaryErrors(const std::string&);
 		void LoadDictionarySpecials(const std::string&);

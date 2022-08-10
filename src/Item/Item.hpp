@@ -6,16 +6,24 @@ class Item {
 	explicit Item(const std::string &);
 	Item() = delete;
 	void Update(int delay);
-  private:
-	enum class QUALITY { FACTORY_NEW,
+	enum class QUALITY {
+	FACTORY_NEW,
 	MINIMAL_WEAR,
 	FIELD_TESTED,
 	WELL_WORN,
 	BATTLE_SCARRED,
 	NO_QUALITY};
 	std::string name;
-	enum class ERROR_CODES { FAILED_TO_GET_DATA, NO_UNITS, NO_ERROR };
-	enum class SPECIAL {STATTRAK, SOUVENIR, NO_SPECIAL};
+	enum class ERROR_CODES { 
+		FAILED_TO_GET_DATA,
+		NO_UNITS,
+		NO_ERROR};
+	enum class SPECIAL {
+		STATTRAK, 
+		SOUVENIR, 
+		NO_SPECIAL};
+	
+  private:
 	double price;
 	ERROR_CODES error_code;
 	QUALITY condition;
@@ -24,6 +32,7 @@ class Item {
 	std::string PerformRequest();
 	friend Item ReadItem(const auto&);
 	friend class Interface;
+	friend class MessegeGenerator;
 	inline static std::string request;
 	static void GenerateRequest(int);
 	std::string GetQuality();

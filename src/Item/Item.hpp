@@ -32,7 +32,6 @@ class Item {
 	std::string PerformRequest();
 	friend Item ReadItem(const auto&);
 	friend class Interface;
-	friend class MessegeGenerator;
 	inline static std::string request;
 	static void GenerateRequest(int);
 	std::string GetQuality();

@@ -12,7 +12,7 @@ class Interface {
 	MessegeGenerator generator;
 
   public:
-	explicit Interface(const std::string &path);
+	explicit Interface();
 	void LoadFromFile(const std::string &path);
 	void Update();
 	void PrintAll();

@@ -1,31 +1,17 @@
 #include "Interface.hpp"
-#include <iostream>
 #include "../rapidjson/document.h"
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
 #include <string>
 
-Interface::Interface(const std::string &filepath) { LoadFromFile(filepath); }
+Interface::Interface() { 
+	generator.LoadDictionaries("dictionaries/");
+}
 
 void Interface::Update() {
 	for (auto &el : items) {
 		el.Update(delay);
-	}
-}
-
-std::string GetCurrencyName(int curr) {
-	switch (curr) {
-	case 1:
-		return "USD";
-	case 2:
-		return "GBP";
-	case 3:
-		return "EUR";
-	case 6:
-		return "PLN";
-	default:
-		return "undefined";
 	}
 }
 
@@ -42,11 +28,12 @@ void Interface::PrintOne(int index) {
 	
 	if ( items.at(index).error_code != Item::ERROR_CODES::NO_ERROR ){
 		const auto error_code = generator.GetError(items.at(index).error_code);
+		printf("%s\t%s\t%s:\t%s\n", special.c_str(), name.c_str(), condition.c_str(), error_code.c_str());
 		return;
 	}
 	const auto price = items.at(index).price;
-	//const auto currency = generator.GetCurrency(curr);
-	std::cout<<name<<special<<condition<<price<<std::endl;
+	const auto currency = generator.GetCurrency(curr);
+	printf("%s\t%s\t%s:\t%.2lf %s\n", special.c_str(), name.c_str(), condition.c_str(), price, currency.c_str());
 }
 
 Item ReadItem(const auto& el){

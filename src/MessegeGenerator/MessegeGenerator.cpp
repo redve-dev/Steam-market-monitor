@@ -56,9 +56,11 @@ std::string MessegeGenerator::GetError(Item::ERROR_CODES e){
 
 void MessegeGenerator::LoadDictionarySpecials(const std::string& path){
 	const auto dictionary = LoadDictionary(path);
-	static const std::array<std::string, 3> elements{
+	static const std::array<std::string, 5> elements{
 		"STATTRAK",
 		"SOUVENIR",
+		"COVERT",
+		"STICKER",
 		"NO_SPECIAL"};
 
 	for(auto & el : elements){
@@ -75,6 +77,10 @@ std::string MessegeGenerator::GetSpecial(Item::SPECIAL s){
 			return specials["STATTRAK"];
 		case SOUVENIR:
 			return specials["SOUVENIR"];
+		case COVERT:
+			return specials["COVERT"];
+		case STICKER:
+			return specials["STICKER"];
 		case NO_SPECIAL:
 			return "";
 		default:

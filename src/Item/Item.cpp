@@ -110,6 +110,10 @@ std::string Item::GetSpecials(){
 			return "StatTrak™ ";
 		case SOUVENIR:
 			return "Souvenir ";
+		case COVERT:
+			return "★ ";
+		case STICKER:
+			return "Sticker | ";
 		case NO_SPECIAL:
 			return "";
 		default:
@@ -140,8 +144,13 @@ void Item::SetQuality(const std::string& quality){
 }
 
 void Item::SetSpecial(const std::string& special){
+	this->special = SPECIAL::NO_SPECIAL;
 	if (special == "StatTrak")
 		this->special = SPECIAL::STATTRAK;
 	if (special == "Souvenir")
 		this->special = SPECIAL::SOUVENIR;
+	if (special == "Covert")
+		this->special = SPECIAL::COVERT;
+	if (special == "Sticker")
+		this->special = SPECIAL::STICKER;
 }

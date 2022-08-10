@@ -1,19 +1,47 @@
 {
-	"currency": 6,
-	"delay": 3500,
+	"currency": 3,
+	"delay": 4000,
 	"items": [
 		{
 			"name": "AK-47 | Fire Serpent",
-			"ST": true,
-			"condition": "test"
+			"special": "StatTrak",
+			"condition": "Field Tested"
 		},
 		{
-			"name": "AWP | Dragon Lore",
-			"ST": false,
-			"condition": "test"
+			"name": "M4A1-S | Knight",
+			"special": "Souvenir",
+			"condition": "Minimal Wear"
 		},
 		{
-			"name": "Revolver Case"
+			"name": "Fracture Case"
+		},
+		{
+			"name": "M4A4 | Global Offensive",
+			"condition": "Factory New"
+		},
+		{
+			"name": "Hydra Gloves | Case Hardened",
+			"special": "Covert",
+			"condition": "Field Tested"
+		},
+		{
+			"name": "Getaway Sally | The Professionals"
+		},
+		{
+			"name": "USTILO (Gold) | Boston 2018",
+			"special": "Sticker"
+		},
+		{
+			"name": "Sealed Graffiti | Recoil MAC-10 (Monarch Blue)"
+		},
+		{
+			"name": "Karambit",
+			"special": "Covert"
+		},
+		{
+			"comment": "Workaround to get stattrak covert items",
+			"name": "★ StatTrak™ Karambit | Lore",
+			"condition": "Field Tested"
 		}
 	]
 }

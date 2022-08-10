@@ -20,7 +20,9 @@ class Item {
 		NO_ERROR};
 	enum class SPECIAL {
 		STATTRAK, 
-		SOUVENIR, 
+		SOUVENIR,
+		COVERT,
+		STICKER,
 		NO_SPECIAL};
 	
   private:

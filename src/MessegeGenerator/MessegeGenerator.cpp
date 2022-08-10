@@ -27,7 +27,7 @@ rapidjson::Document LoadDictionary(const std::string& path){
 }
 
 void MessegeGenerator::LoadDictionaryErrors(const std::string& path){
-	auto dictionary = LoadDictionary(path);
+	const auto dictionary = LoadDictionary(path);
 	static const std::array<std::string, 3> elements{
 		"FAILED_TO_GET_DATA",
 		"NO_UNITS",
@@ -56,7 +56,7 @@ std::string MessegeGenerator::GetError(Item::ERROR_CODES e){
 }
 
 void MessegeGenerator::LoadDictionarySpecials(const std::string& path){
-	auto dictionary = LoadDictionary(path);
+	const auto dictionary = LoadDictionary(path);
 	static const std::array<std::string, 3> elements{
 		"STATTRAK",
 		"SOUVENIR",
@@ -84,7 +84,7 @@ std::string MessegeGenerator::GetSpecial(Item::SPECIAL s){
 }
 
 void MessegeGenerator::LoadDictionaryConditions(const std::string& path){
-	auto dictionary = LoadDictionary(path);
+	const auto dictionary = LoadDictionary(path);
 	static const std::array<std::string, 6> elements{
 		"FACTORY_NEW",
 		"MINIMAL_WEAR",
@@ -124,4 +124,19 @@ void MessegeGenerator::LoadDictionaries(const std::string& path){
 	LoadDictionaryConditions(path+"condition.json");
 	LoadDictionaryErrors(path+"errors.json");
 	LoadDictionarySpecials(path+"specials.json");
+	LoadDictionaryCurrency(path+"currency.json");
+}
+
+void MessegeGenerator::LoadDictionaryCurrency(const std::string& path){
+	const auto dictionary = LoadDictionary(path);
+	for(int i=1; i<=41; i++){
+		const auto t = std::to_string(i);
+		if (dictionary.HasMember(t.c_str())){
+			currency[i] = dictionary[t.c_str()].GetString();
+		}
+	}
+}
+
+std::string MessegeGenerator::GetCurrency(int c){
+	return currency[c];
 }

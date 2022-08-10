@@ -37,11 +37,16 @@ void Interface::PrintAll() {
 
 void Interface::PrintOne(int index) {
 	const auto name = items.at(index).name;
-	const auto price = items.at(index).price;
-	const auto error_code = generator.GetError(items.at(index).error_code);
 	const auto special = generator.GetSpecial(items.at(index).special);
 	const auto condition = generator.GetCondition(items.at(index).condition);
-	const auto currency = generator.GetCurrency(curr);
+	
+	if ( items.at(index).error_code != Item::ERROR_CODES::NO_ERROR ){
+		const auto error_code = generator.GetError(items.at(index).error_code);
+		return;
+	}
+	const auto price = items.at(index).price;
+	//const auto currency = generator.GetCurrency(curr);
+	std::cout<<name<<special<<condition<<price<<std::endl;
 }
 
 Item ReadItem(const auto& el){

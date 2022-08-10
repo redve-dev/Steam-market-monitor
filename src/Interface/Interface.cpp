@@ -1,4 +1,5 @@
 #include "Interface.hpp"
+#include <iostream>
 #include "../rapidjson/document.h"
 #include <cstdlib>
 #include <fstream>
@@ -10,7 +11,9 @@ Interface::Interface() {
 }
 
 void Interface::Update() {
+	int i=0;
 	for (auto &el : items) {
+		printf("Updating item price: %d/%ld\n", ++i, items.size());
 		el.Update(delay);
 	}
 }
@@ -42,10 +45,10 @@ Item ReadItem(const auto& el){
 	if ( el.HasMember("condition")){
 		auto condition = el["condition"].GetString();
 		object.SetQuality(condition);
-		if (el.HasMember("special")){
-			auto special = el["special"].GetString();
-			object.SetSpecial(special);
-		}
+	}
+	if (el.HasMember("special")){
+		auto special = el["special"].GetString();
+		object.SetSpecial(special);
 	}
 	return object;
 }

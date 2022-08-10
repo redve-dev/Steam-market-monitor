@@ -38,27 +38,10 @@ void Interface::PrintAll() {
 void Interface::PrintOne(int index) {
 	const auto name = items.at(index).name;
 	const auto price = items.at(index).price;
-	const auto error_code = items.at(index).error_code;
-	const auto special = items.at(index).special;
-	const auto condition = items.at(index).condition;
-
-	printf("%70s ", name.c_str());
-	if (items.at(index).error_code != Item::ERROR_CODES::NO_ERROR) {
-		switch (items.at(index).error_code) {
-		case Item::ERROR_CODES::FAILED_TO_GET_DATA:
-			printf("FAIL\n");
-			break;
-		case Item::ERROR_CODES::NO_UNITS:
-			printf("NO_UNITS\n");
-			break;
-		default:
-			printf("UNDEFINED ERROR\n");
-			break;
-		}
-		return;
-	}
-	printf("%10.2lf %s\n", price, "PLN");
-	return;
+	const auto error_code = generator.GetError(items.at(index).error_code);
+	const auto special = generator.GetSpecial(items.at(index).special);
+	const auto condition = generator.GetCondition(items.at(index).condition);
+	const auto currency = generator.GetCurrency(curr);
 }
 
 Item ReadItem(const auto& el){
@@ -85,7 +68,8 @@ void Interface::LoadFromFile(const std::string &path) {
 		rapidjson::Document json;
 		json.Parse(json_str.c_str());
 		delay = json["delay"].Get<int>();
-		Item::GenerateRequest(json["currency"].Get<int>());
+		curr = json["currency"].Get<int>();
+		Item::GenerateRequest(curr);
 		if (json["items"].IsArray()) {
 			for (auto &el : json["items"].GetArray()) {
 				items.push_back(ReadItem(el));

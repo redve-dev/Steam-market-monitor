@@ -3,7 +3,7 @@ CXX		?= g++
 LFLAGS 	?= -lcurl
 DFLAGS	?= -pedantic -Wall -W -Wextra -Werror
 CFLAGS	?= -std=c++20
-OBJECTS	?= bin/main.o bin/Item.o bin/Interface.o
+OBJECTS	?= bin/main.o bin/Item.o bin/Interface.o bin/MessegeGenerator.o
 
 FLAGS	?= ${DFLAGS} ${CFLAGS} ${LFLAGS}
 
@@ -23,6 +23,9 @@ bin/Item.o: src/Item/Item.cpp src/Item/Item.hpp | bin
 	$(CXX) -c -o $@ $< $(FLAGS)
 
 bin/Interface.o: src/Interface/Interface.cpp src/Interface/Interface.hpp | bin
+	$(CXX) -c -o $@ $< $(FLAGS)
+
+bin/MessegeGenerator.o: src/MessegeGenerator/MessegeGenerator.cpp src/MessegeGenerator/MessegeGenerator.hpp | bin
 	$(CXX) -c -o $@ $< $(FLAGS)
 
 format:
